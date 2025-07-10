@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Home - Biblionet</title>
+    <link rel="icon" href="public/logo_favicon.ico" type="image/ico" />
+    <link rel="stylesheet" href="{% static 'main/Abdo_page.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-container">
+          <a href="{% url 'home' %}"><img src="{% static 'main/LOGO.png' %}" alt="BIBLIONET Logo" class="logo"></a>
+          <div class="title">
+            <h1>Biblionet</h1>
+            <p>Connecting Minds, One Book at a Time</p>
+          </div>
+        </div>
+      
+        <nav>
+          <ul>
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{% url 'book_list' %}"><i class="fas fa-book"></i> Book List</a></li>
+            {% if not request.user.is_superuser %}
+            <li><a href="{% url 'borrowed_books'%}"><i class="fas fa-book-reader"></i>Borrowed Books</a></li>
+            {% endif %}
+            <li><a href="{% url 'Aboutus'%}"><i class="fas fa-info-circle"></i>About Us</a></li>
+        </nav>
+      
+        <div class="top_right">
+            {% if request.user.is_authenticated %}
+                <span>Welcome, {{ request.user.username }}!</span>
+                <a href="{% url 'logout' %}" class="Log_in">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="Log_in">Log in</a>
+                <div class="vl"></div>
+                <a href="{% url 'signup' %}" class="Register">Register</a>
+            {% endif %}
+        </div>
+
+      </header>
+      
+{% include 'messages.html' %}
+
+<section class="welcome-section">
+    <div class="welcome-content">
+        {% if request.user.is_authenticated %}
+            {% if request.user.is_superuser %}
+                <h2><span id="typewriter-title">Welcome back, {{ request.user.username }}!</span></h2>
+                <span id="typewriter-subtitle" style="display:block;margin-top:10px;font-size:20px;color:#6d4c2b;"></span>
+                <div class="divider">
+                    <span class="divider-line"></span>
+                    <i class="fas fa-user-shield"></i>
+                    <span class="divider-line"></span>
+                </div>
+                <p>You are logged in as an administrator. Manage the library collection and help users discover great books.</p>
+                {% if admin_stats %}
+                <div class="admin-stats">
+                    <p><i class="fas fa-books"></i> Total Books: {{ admin_stats.total_books }}</p>
+                    <p><i class="fas fa-users"></i> Registered Users: {{ admin_stats.total_users }}</p>
+                </div>
+                {% endif %}
+            {% else %}
+                <h2><span id="typewriter-title">Welcome back, {{ request.user.username }}!</span></h2>
+                <span id="typewriter-subtitle" style="display:block;margin-top:10px;font-size:20px;color:#6d4c2b;"></span>
+                <div class="divider">
+                    <span class="divider-line"></span>
+                    <i class="fas fa-book-reader"></i>
+                    <span class="divider-line"></span>
+                </div>
+                <p>Discover, borrow, and enjoy thousands of books at your fingertips</p>
+                {% if user_stats %}
+                <div class="user-stats">
+                    <p><i class="fas fa-bookmark"></i> You have {{ user_stats.borrowed_count }} out of {{ user_stats.max_books }} books borrowed</p>
+                </div>
+                {% endif %}
+            {% endif %}
+        {% else %}
+            <h2><span id="typewriter-title">Welcome to Your Digital Bookshelf</span></h2>
+            <span id="typewriter-subtitle" style="display:block;margin-top:10px;font-size:20px;color:#6d4c2b;"></span>
+            <div class="divider">
+                <span class="divider-line"></span>
+                <i class="fas fa-book-open"></i>
+                <span class="divider-line"></span>
+            </div>
+            <p>Discover, borrow, and enjoy thousands of books at your fingertips</p>
+        {% endif %}
+        <a href="{% url 'book_list' %}" class="browse-btn">Browse Books</a>
+    </div>
+</section>
+
+<main class="main">
+    <section class="featured-books">
+        <div class="featured-content">
+            <div class="featured-text">
+                <h2>Featured Books</h2>
+                <p class="featured-description">Discover the most popular manga titles in our library. These critically acclaimed series offer captivating storylines and stunning artwork that have enchanted readers worldwide.</p>
+            </div>
+            <div class="book-container">
+                <div class="book">
+                    <a href="https://www.goodreads.com/book/show/217387935" target="_blank">
+                        <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1723556679i/217387935.jpg" alt="The Incandescent Book Cover">
+                        <h3>The Incandescent</h3>
+                    </a>
+                    <p><strong>Author:</strong> Emily Tesh</p>
+                    <p><strong>Genre:</strong> Fantasy, Dark Academia, Queer, LGBT, Fiction, Adult</p>
+                    <p class="description">
+                        <em>"Look at you, eating magic like you're one of us."</em><br><br>
+                        At Chetwood Academy, Dr. Walden leads England’s most powerful magicians and protects the school from demonic forces. But her greatest challenge may be facing herself.
+                    </p>
+                </div>
+
+                <div class="book">
+                    <a href="https://www.goodreads.com/book/show/218671850" target="_blank">
+                        <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1750961302i/218671850.jpg" alt="So Far Gone Book Cover">
+                        <h3>So Far Gone</h3>
+                    </a>
+                    <p><strong>Author:</strong> Jess Walter</p>
+                    <p><strong>Genre:</strong> Fiction, Suspense, Family, Contemporary</p>
+                    <p class="description">
+                        A reclusive journalist is thrown into a wild journey to rescue his kidnapped grandchildren. In a world turned upside down, he must face his past and fight for family in the remote woods of the Pacific Northwest.
+                    </p>
+                </div>
+                <div class="book">
+                    <a href="https://www.goodreads.com/book/show/223001257" target="_blank">
+                        <img src="https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1735235942i/223001257.jpg" alt="The Correspondent Book Cover">
+                        <h3>The Correspondent</h3>
+                    </a>
+                    <p><strong>Author:</strong> Virginia Evans</p>
+                    <p><strong>Genre:</strong> Fiction, Literary Fiction, Contemporary, Family</p>
+                    <p class="description">
+                        Sybil Van Antwerp has always used letters to make sense of her world. When a letter from her past resurfaces, she must confront old wounds and find forgiveness to move forward.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p>&copy; 2025 Biblionet.</p>
+</footer>
+{% if request.user.is_superuser %}
+<a href="{% url 'add_book' %}" class="admin-icon" title="Admin Dashboard">
+    <i class="fas fa-user-shield"></i>
+</a>
+{% endif %}
+
+<script>
+// Typewriter effect for the main heading
+window.addEventListener('DOMContentLoaded', function() {
+    var el = document.getElementById('typewriter-title');
+    if (el) {
+        var text = el.textContent;
+        el.textContent = '';
+        var i = 0;
+        var speed = 45; // ms per character
+        var cursor = document.createElement('span');
+        cursor.className = 'typewriter-cursor';
+        cursor.textContent = '|';
+        el.parentNode.appendChild(cursor);
+        function type() {
+            if (i < text.length) {
+                el.textContent += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                cursor.style.opacity = '0.3';
+            }
+        }
+        type();
+    }
+
+    // Typewriter effect for subtitle
+    var subtitle = document.getElementById('typewriter-subtitle');
+    if (subtitle) {
+        var subtitleText = "Your journey of knowledge starts here... Read, discover, and imagine without limits!";
+        var j = 0;
+        var subtitleSpeed = 32;
+        var subtitleCursor = document.createElement('span');
+        subtitleCursor.className = 'typewriter-cursor';
+        subtitleCursor.textContent = '|';
+        subtitle.appendChild(subtitleCursor);
+        function typeSubtitle() {
+            if (j < subtitleText.length) {
+                subtitle.insertBefore(document.createTextNode(subtitleText.charAt(j)), subtitleCursor);
+                j++;
+                setTimeout(typeSubtitle, subtitleSpeed);
+            } else {
+                subtitleCursor.style.opacity = '0.3';
+            }
+        }
+        setTimeout(typeSubtitle, 900); // start after main title
+    }
+});
+</script>
+
+</body>

@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Biblionet Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'main/styles[admin_dashboard].css' %}">
+    <style>
+        body {
+            background-image: url("{% static 'main/background.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        main {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .borrowed-status {
+            color: #8D6E63;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background-color: #FFF5E1;
+            border: 1px solid #8D6E63;
+            border-radius: 4px;
+        }
+
+        .borrowed-status i {
+            color: #8D6E63;
+        }
+
+        .available-status {
+            color: #5cb85c;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 10px;
+            background-color: #f1f9f1;
+            border: 1px solid #5cb85c;
+            border-radius: 4px;
+        }
+
+        .available-status i {
+            color: #5cb85c;
+        }
+    
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+</style>
+
+
+    </style>
+    <script src="{% static 'main/messages.js' %}"></script>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <a href="{% url 'home' %}"><img src="{% static 'main/LOGO.png' %}" alt="BIBLIONET Logo" class="logo"></a>
+        <div>
+            <h1>Biblionet</h1>
+            <p>Connecting Minds, One Book at a Time</p>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{% url 'book_list' %}"><i class="fas fa-book"></i> Book List</a></li>
+            {% if not request.user.is_superuser %}
+            <li><a href="{% url 'borrowed_books' %}"><i class="fas fa-book-reader"></i> Borrowed Books</a></li>
+            {% endif %}
+            <li><a href="{% url 'Aboutus'%}"><i class="fas fa-info-circle"></i>About Us</a></li>
+        </ul>
+        <form class="search-container" method="GET" action="{% url 'book_list' %}">
+            <input type="text" placeholder="Search for a book..." name="search">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+        </form>
+    </nav>
+</header>
+{% include 'messages.html' %}
+<main>
+    <section>
+        <h2>Add New Book</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Book</button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Book List</h2>
+        <table>
+            <thead>
+            <tr>
+                <th class="id-header">ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for book_info in books_info %}
+            <tr>
+                <td class="id-cell">{{ book_info.book.id }}</td>
+                <td>{{ book_info.book.title }}</td>
+                <td>{{ book_info.book.author }}</td>
+                <td>{{ book_info.book.category }}</td>
+                <td>
+                    {% if book_info.is_borrowed %}
+                        <span class="borrowed-status">
+                            <i class="fas fa-book-reader"></i> 
+                            Borrowed ({{ book_info.borrower_count }} user{{ book_info.borrower_count|pluralize }})
+                        </span>
+                    {% else %}
+                        <span class="available-status">
+                            <i class="fas fa-check"></i> Available
+                        </span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{% url 'edit_book' book_info.book.id %}">
+                            <button>Edit</button>
+                        </a>
+                        <a href="{% url 'delete_book' book_info.book.id %}">
+                            <button>Delete</button>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No books available.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Online Library.</p>
+</footer>
+</body>
+</html>

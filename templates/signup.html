@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign up - Biblionet</title>
+    <link rel="stylesheet" href="{% static 'main/styles.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+      body {
+        background-image: url("{% static 'main/background.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        min-height: 100vh;
+      }
+      .container {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 30px;
+        margin: 50px auto;
+        max-width: 500px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .password-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 40px; /* مساحة كافية للأيقونة */
+      box-sizing: border-box;
+      font-size: 16px;
+      padding: 8px 12px;
+    }
+    .password-wrapper .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #555;
+      font-size: 20px;
+      user-select: none;
+      transition: color 0.2s;
+    }
+    .password-wrapper .toggle-password:hover {
+      color: #000;
+    }
+    </style>
+  </head>
+
+  <header>
+    <div class="header-container">
+      <a href="{% url 'home' %}"><img src="{% static 'main/LOGO.png' %}" alt="BIBLIONET Logo" class="logo"></a>
+        <div>
+            <h1>Biblionet</h1>
+            <p>Connecting Minds, One Book at a Time</p>
+        </div>
+    </div>
+    <nav>
+        <ul>
+          <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{% url 'book_list' %}"><i class="fas fa-book"></i> Book List</a></li>
+            <li><a href="{% url 'borrowed_books' %}"><i class="fas fa-book-reader"></i> Borrowed Books</a></li>
+            <li><a href="{% url 'Aboutus' %}"><i class="fas fa-info-circle"></i> About Us</a></li>
+        </ul>
+    </nav>
+  </header>
+
+
+  <body>
+    {% include 'messages.html' %}
+    <div class="container"> 
+      <form method="post" id="signup-form">
+        {% csrf_token %}
+        
+        <label for="id_first_name">First name</label><br />
+        {{ form.first_name }}  
+        {% if form.first_name.errors %}
+          <div style="color:red; font-size: small;">{{ form.first_name.errors.0 }}</div>
+        {% endif %}
+
+        <label for="id_last_name">Last name</label><br />
+        {{ form.last_name }}  
+        {% if form.last_name.errors %}
+          <div style="color:red; font-size: small;">{{ form.last_name.errors.0 }}</div>
+        {% endif %}
+
+        <label for="id_email">Email</label><br />
+        {{ form.email }}  
+        {% if form.email.errors %}
+          <div style="color:red; font-size: small;">{{ form.email.errors.0 }}</div>
+        {% endif %}
+
+        <label for="id_username">Username</label><br />
+        {{ form.username }}  
+        {% if form.username.errors %}
+          <div style="color:red; font-size: small;">{{ form.username.errors.0 }}</div>
+        {% endif %}
+
+        <label for="id_password">Password</label><br />
+        <div class="password-wrapper">
+          {{ form.password }}
+          <i class="fa-solid fa-eye toggle-password"></i>
+        </div>
+        {% if form.password.errors %}
+          <div style="color:red; font-size: small;">{{ form.password.errors.0 }}</div>
+        {% endif %}
+
+        <label for="id_confirm_password">Confirm password</label><br />
+        <div class="password-wrapper">
+          {{ form.confirm_password }}
+          <i class="fa-solid fa-eye toggle-password"></i>
+        </div>
+        {% if form.confirm_password.errors %}
+          <div style="color:red; font-size: small;">{{ form.confirm_password.errors.0 }}</div>
+        {% endif %}
+
+
+
+        <div id="radio">
+          <label>Sign-up as</label><br><br>
+          {{ form.role }}  
+          {% if form.role.errors %}
+            <div style="color:red; font-size: small;">{{ form.role.errors.0 }}</div>
+          {% endif %}
+          
+        </div>
+
+        <input type="submit" value="Submit" />
+      </form>
+      <p>Already have an account? <a href="{% url 'login' %}">Log in here</a>.</p>
+
+    </div>
+    <script src="{% static 'main/messages.js' %}"></script>
+    <script>
+  document.querySelectorAll('.toggle-password').forEach(function(icon) {
+    icon.addEventListener('click', function() {
+      const passwordInput = this.previousElementSibling;
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        this.classList.remove('fa-eye');
+        this.classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        this.classList.remove('fa-eye-slash');
+        this.classList.add('fa-eye');
+      }
+    });
+  });
+</script>
+
+</body>
+
+  <footer>
+    <p>&copy; 2025 Online Library.</p>
+  </footer>
+</html>

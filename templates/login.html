@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Biblionet</title>
+  <link rel="stylesheet" href="{% static 'main/styles.css' %}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      background-image: url("{% static 'main/background.jpg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 30px;
+      margin: 50px auto;
+      max-width: 400px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 40px;
+      box-sizing: border-box;
+      font-size: 16px;
+      padding: 8px 12px;
+    }
+    .toggle-password {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #555;
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+<header>
+  <div class="header-container">
+    <a href="{% url 'home' %}"><img src="{% static 'main/LOGO.png' %}" alt="BIBLIONET Logo" class="logo"></a>
+    <div>
+      <h1>Biblionet</h1>
+      <p>Connecting Minds, One Book at a Time</p>
+    </div>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="{% url 'book_list' %}"><i class="fas fa-book"></i> Book List</a></li>
+      <li><a href="{% url 'borrowed_books' %}"><i class="fas fa-book-reader"></i> Borrowed Books</a></li>
+      <li><a href="{% url 'Aboutus' %}"><i class="fas fa-info-circle"></i> About Us</a></li>
+    </ul>
+  </nav>
+</header>
+
+<body>
+  {% include 'messages.html' %}
+  <div class="container">
+    <form method="post">
+      {% csrf_token %}
+      
+      <label for="email">Email</label>
+      <input type="text" name="email" required>
+
+      <label for="password">Password</label>
+      <div class="password-wrapper">
+        <input type="password" name="password" id="password-field" required>
+        <i class="fa-solid fa-eye toggle-password"></i>
+      </div>
+
+      <input type="submit" value="Login">
+    </form>
+
+    {% if error %}
+      <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    <p>Don't have an account? <a href="{% url 'signup' %}">Sign up here</a>.</p>
+  </div>
+
+  <script src="{% static 'main/messages.js' %}"></script>
+  <script>
+    document.querySelector('.toggle-password').addEventListener('click', function () {
+      const passwordField = document.getElementById('password-field');
+      const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordField.setAttribute('type', type);
+      this.classList.toggle('fa-eye');
+      this.classList.toggle('fa-eye-slash');
+    });
+  </script>
+</body>
+
+<footer style="position: fixed">
+  <p>&copy; 2025 Online Library.</p>
+</footer>
+</html>

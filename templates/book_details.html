@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details - Online Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'main/book_details.css' %}">
+    <style>
+        body {
+    background-image: url("{% static 'main/background.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <a href="{% url 'home' %}"><img src="{% static 'main/LOGO.png' %}" alt="BIBLIONET Logo" class="logo"></a>
+        <div>
+            <h1>Biblionet</h1>
+            <p>Connecting Minds, One Book at a Time</p>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{% url 'book_list' %}"><i class="fas fa-book"></i> Book List</a></li>
+            {% if not request.user.is_superuser %}
+            <li><a href="{% url 'borrowed_books'%}"><i class="fas fa-book-reader"></i>Borrowed Books</a></li>
+            {% endif %}
+            <li><a href="{% url 'Aboutus'%}"><i class="fas fa-info-circle"></i>About Us</a></li>
+        </ul>
+        <form class="search-container" method="GET">
+            <input type="text" placeholder="Search for a book..." name="search">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+        </form>
+    </nav>
+</header>
+
+{% include 'messages.html' %}
+
+<main>
+    <section class="book-details">
+        <div class="book-cover">
+            <img src="{{ book.image }}" alt="{{ book.title }}">
+
+        </div>
+        <div class="details-container">
+            <h2>{{ book.title }}</h2>
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Genre:</strong> {{ book.category }}</p>
+            <p><strong>Description:</strong></p>
+            <p>{{ book.description }}</p>
+
+            {% if user.is_authenticated %}
+                {% if not user.is_superuser %}
+                    {% if book.id in user_borrowed_books %}
+                        <button class="borrow-btn borrowed" disabled>
+                            <i class="fas fa-book-reader"></i> Already Borrowed
+                        </button>
+                        {% if borrowed_id %}
+                            <form method="post" action="{% url 'return_book' borrowed_id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="borrow-btn return-btn">
+                                    <i class="fas fa-undo"></i> Return Book
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% elif book.available_copies > 0 %}
+                        <a href="{% url 'borrow_book' book.id %}">
+                            <button class="borrow-btn">
+                                <i class="fas fa-book-reader"></i> Borrow Book
+                            </button>
+                        </a>
+                    {% else %}
+                        <button class="borrow-btn unavailable" disabled>
+                            <i class="fas fa-times-circle"></i> Currently Unavailable
+                        </button>
+                    {% endif %}
+                {% else %}
+                    <span class="borrow-btn admin-status">
+                        <i class="fas fa-user-shield"></i> Admin View
+                    </span>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}">
+                    <button class="borrow-btn">
+                        <i class="fas fa-sign-in-alt"></i> Login to Borrow
+                    </button>
+                </a>
+            {% endif %}
+            <a href="{% url 'book_list' %}"><button class="back-btn">Back to List</button></a>
+
+            {% if user.is_authenticated and user.is_staff %}
+            <div class="admin-controls">
+                <a href="{% url 'edit_book' book.id %}"><button class="edit-btn">Edit Book</button></a>
+                <a href="{% url 'delete_book' book.id %}"><button class="delete-btn">Delete Book</button></a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 Online Library.</p>
+</footer>
+<!-- <script src="{% static 'main/book_details.js' %}"></script> -->
+</body>
+</html>

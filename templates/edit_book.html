@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Book</title>
+    <link rel="stylesheet" href="{% static 'main/styles[admin_dashboard].css' %}">
+</head>
+<body>
+    {% include 'messages.html' %}
+    <main>
+        <h2>Edit Book: {{ book.title }}</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save Changes</button>
+        </form>
+        <a href="{% url 'book_list' %}">Cancel</a>
+    </main>
+</body>
+</html>

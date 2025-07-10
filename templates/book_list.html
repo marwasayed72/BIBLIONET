@@ -1,0 +1,113 @@
+{% load static %}
+{% load book_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List - Online Library</title>
+    <link rel="stylesheet" href="{% static 'main/booklist_aboutus.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="{% static 'main/alert-system.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers to all borrow buttons
+            document.querySelectorAll('.borrow-btn').forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    if (this.classList.contains('borrowed') || this.classList.contains('unavailable')) {
+                        e.preventDefault();
+                        const status = this.classList.contains('borrowed') ? 'borrowed' : 'unavailable';
+                        const bookTitle = this.closest('.book').querySelector('h3').textContent;
+                        if (status === 'borrowed') {
+                            showMessage(`You have already borrowed "${bookTitle}"`, 'info');
+                        } else {
+                            showMessage(`Sorry, "${bookTitle}" is currently unavailable`, 'error');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="{% static 'main/messages.js' %}"></script>
+    <style>
+        body {
+    background-image: url("{% static 'main/background.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <a href="{% url 'home' %}"><img src="{% static 'main/LOGO.png' %}" alt="BIBLIONET Logo" class="logo"></a>
+        <div>
+            <h1>Biblionet</h1>
+            <p>Connecting Minds, One Book at a Time</p>
+        </div>
+    </div>
+    <nav>
+        <ul>
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="{% url 'book_list' %}"><i class="fas fa-book"></i> Book List</a></li>
+            {% if not is_admin %}
+            <li><a href="{% url 'borrowed_books'%}"><i class="fas fa-book-reader"></i>Borrowed Books</a></li>
+            {% endif %}
+            <li><a href="{% url 'Aboutus'%}"><i class="fas fa-info-circle"></i>About Us</a></li>
+        </ul>
+        <form class="search-container" method="GET">
+            <input type="text" placeholder="Search for a book..." name="search">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+        </form>
+    </nav>
+</header>
+
+{% include 'messages.html' %}
+
+<section class="book-list">
+    <h2>Available Books</h2>
+    <div class="book-container" id="bookContainer">
+        {% for book_status in books_with_status %}
+            <div class="book">
+                <a href="{% url 'book_details' book_status.book.id %}">
+                    <img src="{{ book_status.book.image }}" alt="{{ book_status.book.title }}">
+                    <h3>{{ book_status.book.title }}</h3>
+                </a>
+                <p><strong>Author:</strong> {{ book_status.book.author }}</p>
+                <p><strong>Genre:</strong> {{ book_status.book.category }}</p>
+                <p class="description">{{ book_status.book.description|truncatewords:20 }}</p>
+                <div class="book-status">
+                    {% if book_status.is_borrowed_by_user %}
+                        <button type="button" class="borrow-btn borrowed">
+                            <i class="fas fa-book-reader"></i> Borrowed
+                        </button>
+                    {% elif book_status.available_copies > 0 %}
+                        {% if not is_admin %}
+                            <a href="{% url 'borrow_book' book_status.book.id %}" class="borrow-btn">
+                                <i class="fas fa-book-reader"></i> Borrow
+                            </a>
+                        {% else %}
+                            <span class="borrow-btn admin-status">
+                                <i class="fas fa-user-shield"></i> Admin View
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <button type="button" class="borrow-btn unavailable">
+                            <i class="fas fa-times-circle"></i> Unavailable
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2025 Online Library.</p>
+</footer>
+<!-- <script src="{% static 'main/book_list.js' %}"></script> -->
+</body>
+</html>
